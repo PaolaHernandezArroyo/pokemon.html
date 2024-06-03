@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+    <title>Squirtle</title>
+    <style>
+        body {
+            background-color: #c96a12;
+            font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+        }
+        .pokeImg {
+            width: 150px;
+            height: 150px;
+            position: absolute;
+            top: 293px;
+            left: 80px;
+        }
+        button {
+            width: 50px;
+            height: 50px;
+            background-color: rgb(33, 23, 122);
+            border-color: rgb(240, 136, 235);
+            border-radius: 50px;
+            position: absolute;
+            left: 55px;
+            top: 503px;
+        }
+        .placeholder {
+            width: 130px;
+            height: 60px;
+            position: absolute;
+            top: 570px;
+            left: 105px;
+            font-size: 25px;
+            background-color: transparent;
+            text-align: center;
+            border-radius: 10px;
+        }
+        .grafica {
+            width: 300px;
+            height: 300px;
+            position: absolute;
+            top: 264px;
+            left: 447px;
+        }
+        .info {
+            position: absolute;
+            top: 290px;
+            left: 195px;
+            font-size: 15px;
+            background-color: transparent;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(39, 39, 39, 0.842);
+        }
+    </style>
+</head>
+<body>
+    <div style="margin: 24px;">
+        <nav class="navbar navbar-light" style="background-color: rgb(196, 255, 250);">
+            <div class="container">
+                <a class="navbar-brand" href="pagina.html" style="color: black; font-family: 'La unica', sans-serif;">Inicio</a>
+                <div class="collapse navbar-collapse" id="navbarNavDropDown">
+                    <ul class="nav navbar-nav">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Unidad 1</a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDripdownMenuLink">
+                                <a class="dropdown-item" href="Perfil.html">Perfil</a><br>
+                                <a class="dropdown-item" href="Calculadora.html">Calculadora</a><br>
+                                <a class="dropdown-item" href="Tienda.html">Tienda parte 1</a>
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Unidad 2</a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDripdownMenuLink">
+                                <a class="dropdown-item" href="TiendaPedido.html">Tienda Pedido</a><br>
+                                <a class="dropdown-item" href="Json.html">Json</a><br>
+                                <a class="dropdown-item" href="Tiendapedido2.html">Tienda Pedido 2</a>
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Unidad 3</a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDripdownMenuLink">
+                                <a class="dropdown-item" href="Peliculas.html">Peliculas</a><br>
+                                <a class="dropdown-item" href="Basededatos.html">Base de Datos</a><br>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    <img src="Pokedex.jpg" alt="Pokedex" width="800px">
+    <input type="text" placeholder="pikachu" id="pokeName" class="placeholder">
+    <img src="Pokebola.png" alt="Pokebola" id="pokeImg" width="285px" class="pokeImg" onclick="showInfo()">
+
+    <div id="info" class="info"></div>
+
+    <button onclick="fetchPokemon()" class="button"></button>
+    <div class="grafica">
+        <canvas id="miCanvas"></canvas>
+    </div>
+
+    <script>
+        let pokemonData;
+
+        const fetchPokemon = () => {
+            const pokeNameInput = document.getElementById("pokeName");
+            let pokeName = pokeNameInput.value.toLowerCase();
+            const url = `https://pokeapi.co/api/v2/pokemon/${pokeName}`;
+
+            fetch(url)
+                .then(res => {
+                    if (!res.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    console.log(data);
+                    
+                    pokemonData = data;
+                    document.getElementById('pokeImg').src = data.sprites.front_default;
+                    showInfo();
+
+                    const miCanvas = document.getElementById("miCanvas").getContext("2d");
+                    if (window.miCanva !== undefined) {
+                        window.miCanva.destroy();
+                    }
+                    window.miCanva = new Chart(miCanvas, {
+                        type: "bar",
+                        data: {
+                            labels: ["HP", "Attack", "Defense", "Special-A", "Special-D", "Speed"],
+                            datasets: [{
+                                label: data.forms[0].name,
+                                data: [
+                                    data.stats[0].base_stat,
+                                    data.stats[1].base_stat,
+                                    data.stats[2].base_stat,
+                                    data.stats[3].base_stat,
+                                    data.stats[4].base_stat,
+                                    data.stats[5].base_stat
+                                ],
+                                borderColor: [
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(153, 102, 255, 1)',
+                                    'rgba(255, 159, 64, 1)'
+                                ],
+                                backgroundColor: [
+                                    'rgba(255, 99, 132, 0.5)',
+                                    'rgba(54, 162, 235, 0.5)',
+                                    'rgba(255, 206, 86, 0.5)',
+                                    'rgba(75, 192, 192, 0.5)',
+                                    'rgba(153, 102, 255, 0.5)',
+                                    'rgba(255, 159, 64, 0.5)'
+                                ]
+                            }]
+                        }
+                    });
+                })
+                .catch(error => {
+                    console.error('There has been a problem with your fetch operation:', error);
+                    alert('Error fetching Pokemon data. Please try again.');
+                });
+        }
+
+        const showInfo = () => {
+            if (!pokemonData) return;
+
+            const infoDiv = document.getElementById("info");
+            infoDiv.innerHTML = `
+                <p>Name: ${pokemonData.forms[0].name}</p>
+                <p>Height: ${pokemonData.height}</p>
+                <p>Weight: ${pokemonData.weight}</p>
+                <p>Type: ${pokemonData.types[0].type.name}</p>
+            `;
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</body>
+</html>
